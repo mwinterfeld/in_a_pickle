@@ -25,7 +25,6 @@ function checkNameTag(){
     else {
         $("#nametag").html("<form id='newname'>Set Name:&nbsp;<input></input>&nbsp;<button class='headerbtn' style='margin-right: 5px;'>Submit</button></form>");
         $("#newname").submit(function(){
-            socket.emit("setname", {id: $.cookie("UUID"), name: $("#newname input").val()});
             $.cookie("name", $("#newname input").val());
             checkNameTag();
             return false;
@@ -33,16 +32,14 @@ function checkNameTag(){
     }
 }
 
-function loadCreateGameScreen(){
-    $("html").load("/create.html", function(){
-
-    });
+function createGame(){
+    socket.emit("newgame", {"id": $.cookie("UUID")})
 }
 
 $(document).ready(function(){
     setupSocket();
     $("#createGame").click(function(){
-        loadCreateGameScreen();
+        createGame();
     });
     $("#joinGame").click(function(){
         window.location = "/game.html";
