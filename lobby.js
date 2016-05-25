@@ -1,31 +1,32 @@
-var socket;
-
 function setupSocket(){
-    socket = io.connect('/');
+    window.socket = io.connect('/');
     if(!$.cookie("UUID")){
-        socket.on("newuser", function(data){
+        window.socket.on("newuser", function(data){
             $.cookie("UUID", data.id);
-            $("#userid").html($.cookie("UUID"));
             checkNameTag();
         });
-        socket.emit("newuser");
+        window.socket.emit("newuser");
     }
     else {
-        socket.emit("returninguser", {id: $.cookie("UUID")});
+        window.socket.emit("returninguser", {id: $.cookie("UUID")});
         $("#userid").html($.cookie("UUID"));
         checkNameTag();
     }
-    socket.emit("onconnected");
+    window.socket.emit("onconnected");
 }
 
 function checkNameTag(){
     if($.cookie("name")){
         $("#nametag").html("&nbsp;Welcome&nbsp;" + $.cookie("name") + "&nbsp;<button class='headerbtn' style='margin-left: 10px;' id='createGame'>Create Game</button>");
+        $("#createGame").click(function(){
+            createGame();
+        });
     }
     else {
         $("#nametag").html("<form id='newname'>Set Name:&nbsp;<input></input>&nbsp;<button class='headerbtn' style='margin-right: 5px;'>Submit</button></form>");
         $("#newname").submit(function(){
             $.cookie("name", $("#newname input").val());
+            window.socket.emit("setname", $.cookie("name"));
             checkNameTag();
             return false;
         });
@@ -33,14 +34,14 @@ function checkNameTag(){
 }
 
 function createGame(){
-    socket.emit("newgame", {"id": $.cookie("UUID")})
+    window.socket.emit("newgame", {"id": $.cookie("UUID"), "name": $.cookie("name")});
+    window.socket.on("newgame", function(data){
+        window.location = "/game/" + data.id;
+    });
 }
 
 $(document).ready(function(){
     setupSocket();
-    $("#createGame").click(function(){
-        createGame();
-    });
     $("#joinGame").click(function(){
         window.location = "/game.html";
     });
