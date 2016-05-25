@@ -5,11 +5,14 @@ var UUID = require('node-uuid');
 
 var games = {};
 
-game = function(name, pid){
-    return {
+game = function(name, pid, pname){
+    var obj = {
         name: name,
-        players: [pid]
+        players: [pid],
+        player_names: {}
     }
+    obj.player_names[pid] = pname;
+    return obj;
 }
 
 app.get('/', function(req, res){
@@ -47,28 +50,43 @@ io.on('connection', function(client){
     });
 
     client.on("newgame", function(data){
-        console.log('\t client ' + data.id + ' requested a new game');
-        var newgame = new game(data.name + "'s Game", data.id);
+        console.log('\t player ' + data.id + ' requested a new game');
+        var newgame = new game(data.name + "'s Game", data.id, data.name);
         var gameid = UUID();
         games[gameid] = newgame;
         client.emit("newgame", {"id": gameid, "name": newgame.name});
     });
 
     client.on("joingame", function(data){
+        if(!(data.gameid in games)){
+            console.log("\tInvalid game id: " + data.gameid)
+            client.emit("invalidgame");
+            return;
+        }
         client.gameid = data.gameid;
-        console.log("\t" + data.userid + " joined game " + games[data.gameid].name);
-        if(!(data.userid in games[data.gameid].players)){
-            games[data.gameid].players.push(data.userid);
+        client.join(client.gameid);
+        console.log("\t" + data.userid + " joined " + games[client.gameid].name);
+        if(games[client.gameid].players.indexOf(data.userid) === -1){
+            games[client.gameid].players.push(data.userid);
+            games[client.gameid].player_names[data.userid] = data.name;
         }
         console.log(games[data.gameid].players);
     });
 
     client.on("keyup", function(data){
-        io.sockets.emit("keyup", data.name + ": " + data.msg);
+        console.log(data.id);
+        console.log(games[client.gameid].player_names)
+        console.log(games[client.gameid].player_names[data.id])
+        client.broadcast.to(client.gameid).emit("keyup", games[client.gameid].player_names[data.id] + ": " + data.msg);
     });
     
     //When this client disconnects
     client.on('disconnect', function (data) {
+        client.leave(client.gameid);
+        if(client.gameid in games){
+            games[client.gameid].players.splice(client.gameid);
+            delete games[client.gameid].player_names[client.gameid];            
+        }
         console.log('\t ::socket.io:: client disconnected ' + client.userid );
     }); //client.on disconnect
 });

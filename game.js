@@ -4,12 +4,16 @@ function setupSocket(){
 }
 
 function joinGame(){
-    window.socket.emit("joingame", {"userid": $.cookie("UUID"), "gameid": document.location.pathname.replace("/game/", "")});
+    window.socket.on("invalidgame", function(){
+        window.location = "/";
+    });
+    window.socket.emit("joingame", {"userid": $.cookie("UUID"), "gameid": document.location.pathname.replace("/game/", ""), "name": $.cookie("name")});
 }
 
 function runGame(){
     $("html").keyup(function(e){
-        window.socket.emit('keyup', {"name": $.cookie("name"), "msg": e.keyCode});
+        $("ul").append("<li>" + $.cookie("name") + ": " + e.keyCode + "</li>");
+        window.socket.emit('keyup', {"id": $.cookie("UUID"), "msg": e.keyCode});
     });
 
     window.socket.on("keyup", function(data){
