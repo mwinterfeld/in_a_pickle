@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The Game</title> 
+        <style type="text/css">
+          #canvas {
+            position: absolute;
+            left: 0; right: 0; top: 0; bottom: 0; 
+            margin: auto;
+            border: 1px solid black;
+          }
+          #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 50px;
+            width: 100%;
+            margin: 5px;
+            border: 10px solid #222;
+            background-color: #DDD;
+            vertical-align: middle;
+          }
+          button.headerbtn {
+            margin-right: 20px;
+            cursor: pointer;
+          }
+        </style>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+        <script src="/jquery.cookie.js"></script>
+        <script src="/lobby.js"></script>
+    </head>
+
+    <body>
+        <div id='header'>
+            <h3 id='nametag'></h3>
+        </div>
+    </body>
+
+</html>
