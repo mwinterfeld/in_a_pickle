@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The Game</title>
+        <style>
+            body, html {
+                height: 100%;
+                width: 100%;
+            }
+            ul#players, #chat ul {
+                border: 1px solid black;
+                list-style: none;
+                padding: 5px;
+                border-radius: 2px;
+                height: 80%;
+            }
+
+            #chat ul {
+                height: 74%;
+                margin-bottom: 1%;
+                overflow: scroll;
+            }
+
+            ul#players li, #chat ul li {
+                color: white;
+                background-color: #555;
+                border-radius: 3px;
+                margin: 1px;
+                padding: 2px;
+            }
+
+            ul#players li:nth-child(odd), #chat ul li:nth-child(odd){
+                background-color: #666;
+            }
+            div#header {
+                background-color: #222;
+            }
+        </style>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+        <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+        <script src="/jquery.cookie.js"></script>
+        <script src="/game_lobby.js"></script>
+    </head>
+    <body>
+        <div style='height: 100%; width: 100%;'>
+            <div id='header' style='height: 25px; padding: 5px;'>
+                <button style="float: left" id='start'>Start Game</button>
+                <button style="float: left; margin-left: 5px;" onclick="window.location='/'">Leave Game</button>
+            </div>
+            <div style='height: 90%; width: 30%; float: left;'>
+                <h3>Players</h3>
+                <ul id="players"></ul>
+            </div>
+            <div id="chat" style='height: 90%; width: 60%; margin-left: 1%; float: left;'>
+                <h3>Chat</h3>
+                <ul></ul>
+                <form style='width: 100%'>
+                    <input style='width: 89%; float; left'></input>
+                    <button style='margin-left: 1%; padding-left: 2px; padding-right: 2px; margin: 0;'>Send</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
